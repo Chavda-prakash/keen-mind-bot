@@ -6,19 +6,19 @@ export interface ChatMessage {
 export interface CompletionRequest {
   model: string;
   messages: ChatMessage[];
-  temperature?: number;
-  maxTokens?: number;
+  temperature?: number | undefined;
+  maxTokens?: number | undefined;
   /** ask the provider for a JSON object back */
-  json?: boolean;
-  signal?: AbortSignal;
+  json?: boolean | undefined;
+  signal?: AbortSignal | undefined;
 }
 
 export interface CompletionResult {
   text: string;
   provider: string;
   model: string;
-  promptTokens?: number;
-  completionTokens?: number;
+  promptTokens?: number | undefined;
+  completionTokens?: number | undefined;
   latencyMs: number;
 }
 
