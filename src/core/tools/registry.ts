@@ -21,6 +21,15 @@ export interface ToolContext {
   granted: ToolPermission[];
   allowedDomains?: string[];
   signal?: AbortSignal | undefined;
+  /**
+   * Injected services (database client, embedding function, …). Kept loosely
+   * typed so the registry stays independent of any storage vendor.
+   */
+  services?: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    db?: any;
+    embed?: (text: string) => Promise<number[]>;
+  };
   /** invoked for every attempt so the caller can persist an audit trail */
   audit?: (entry: ToolAuditEntry) => void | Promise<void>;
 }
