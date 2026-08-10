@@ -25,10 +25,10 @@ export interface RunOptions {
   conversationId: string;
   question: string;
   mode: ResearchMode;
-  history?: { role: string; content: string }[];
-  workspaceInstructions?: string | null;
-  signal?: AbortSignal;
-  onEvent?: (event: AgentEvent) => void;
+  history?: { role: string | undefined; content: string }[];
+  workspaceInstructions?: string | null | undefined;
+  signal?: AbortSignal | undefined;
+  onEvent?: (event: AgentEvent) => void | undefined;
 }
 
 const PERMISSIONS_BY_MODE: Record<ResearchMode, ToolPermission[]> = {

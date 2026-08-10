@@ -12,10 +12,10 @@ Rules:
 export async function analyzeIntent(opts: {
   question: string;
   mode: ResearchMode;
-  history?: { role: string; content: string }[];
-  memories?: string[];
+  history?: { role: string | undefined; content: string }[];
+  memories?: string[] | undefined;
   maxQueries: number;
-  signal?: AbortSignal;
+  signal?: AbortSignal | undefined;
 }): Promise<Intent> {
   const context = [
     opts.history?.length
@@ -88,7 +88,7 @@ export async function proposeFollowUpQueries(opts: {
   answerDraft: string;
   gaps: string[];
   limit: number;
-  signal?: AbortSignal;
+  signal?: AbortSignal | undefined;
 }): Promise<string[]> {
   try {
     const res = await routeCompletion({

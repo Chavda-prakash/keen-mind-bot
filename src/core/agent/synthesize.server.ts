@@ -50,11 +50,11 @@ function renderEvidence(evidence: EvidenceItem[]): string {
 export async function synthesizeAnswer(opts: {
   question: string;
   evidence: EvidenceItem[];
-  history?: { role: string; content: string }[];
-  memories?: string[];
-  workspaceInstructions?: string | null;
+  history?: { role: string | undefined; content: string }[];
+  memories?: string[] | undefined;
+  workspaceInstructions?: string | null | undefined;
   grounded: boolean;
-  signal?: AbortSignal;
+  signal?: AbortSignal | undefined;
 }): Promise<SynthesisResult> {
   const messages: { role: "system" | "user" | "assistant"; content: string }[] = [
     { role: "system", content: opts.grounded ? GROUNDED_SYSTEM : CHAT_SYSTEM },
@@ -170,7 +170,7 @@ export async function evaluateAnswer(opts: {
   answer: string;
   evidence: EvidenceItem[];
   citations: ClaimCitation[];
-  signal?: AbortSignal;
+  signal?: AbortSignal | undefined;
 }): Promise<SelfEvaluation> {
   const domains = new Set(opts.evidence.map((e) => e.domain));
   const deterministic: SelfEvaluation = {
