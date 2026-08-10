@@ -23,13 +23,13 @@ export function listLlmProviders(): LlmProvider[] {
 export interface RouteOptions {
   role: ModelRole;
   messages: ChatMessage[];
-  json?: boolean;
-  temperature?: number;
-  maxTokens?: number;
-  signal?: AbortSignal;
+  json?: boolean | undefined;
+  temperature?: number | undefined;
+  maxTokens?: number | undefined;
+  signal?: AbortSignal | undefined;
   /** force a specific provider (used by multi-model comparison) */
-  providerId?: string;
-  modelOverride?: string;
+  providerId?: string | undefined;
+  modelOverride?: string | undefined;
 }
 
 export interface RoutedCompletion extends CompletionResult {

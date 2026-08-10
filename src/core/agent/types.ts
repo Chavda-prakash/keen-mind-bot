@@ -47,10 +47,10 @@ export interface AgentTask {
   title: string;
   kind: TaskKind;
   status: TaskStatus;
-  query?: string;
-  toolName?: string;
+  query?: string | undefined;
+  toolName?: string | undefined;
   result?: unknown;
-  error?: string;
+  error?: string | undefined;
 }
 
 export interface Intent {
