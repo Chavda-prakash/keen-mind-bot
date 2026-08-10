@@ -1,24 +1,67 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { Compass, FileSearch, Quote, Search } from "lucide-react";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "Sutradhar — Cited AI Research Agent" },
+      {
+        name: "description",
+        content:
+          "Sutradhar is a personal AI research agent: real web search, sources you can open, inline citations, deep research and document Q&A.",
+      },
+      { property: "og:title", content: "Sutradhar — Cited AI Research Agent" },
+      {
+        property: "og:description",
+        content: "Evidence-first AI research with real sources, inline citations and deep research workflows.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: Landing,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function Landing() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <main className="min-h-screen bg-background text-foreground">
+      <section className="mx-auto max-w-3xl px-6 py-24 text-center">
+        <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+          <Compass className="h-5 w-5" />
+        </span>
+        <h1 className="mt-6 text-4xl font-semibold tracking-tight sm:text-5xl">
+          Research that shows its sources
+        </h1>
+        <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground">
+          Sutradhar plans a research strategy, searches the live web, reads the pages it finds, verifies each
+          claim against retrieved evidence, and answers with inline citations you can open.
+        </p>
+        <div className="mt-8 flex justify-center gap-3">
+          <Link
+            to="/research"
+            className="rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground"
+          >
+            Start researching
+          </Link>
+          <Link to="/auth" className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium">
+            Sign in
+          </Link>
+        </div>
+
+        <div className="mt-16 grid gap-4 text-left sm:grid-cols-3">
+          {[
+            { icon: Search, title: "Real web search", body: "Multiple queries per question, with provider failover. No invented results." },
+            { icon: Quote, title: "Verified citations", body: "Markers are mapped back to the passage that supports them." },
+            { icon: FileSearch, title: "Your documents", body: "Upload files and research them with the same cited pipeline." },
+          ].map((f) => (
+            <div key={f.title} className="rounded-2xl border border-border bg-card/60 p-4">
+              <f.icon className="h-4 w-4 text-primary" />
+              <h2 className="mt-3 text-sm font-semibold">{f.title}</h2>
+              <p className="mt-1 text-xs text-muted-foreground">{f.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </main>
   );
 }

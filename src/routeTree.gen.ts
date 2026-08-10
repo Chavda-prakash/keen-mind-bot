@@ -10,33 +10,86 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedResearchRouteImport } from './routes/_authenticated/research'
+import { Route as AuthenticatedResearchIndexRouteImport } from './routes/_authenticated/research.index'
+import { Route as AuthenticatedResearchConversationIdRouteImport } from './routes/_authenticated/research.$conversationId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedResearchRoute = AuthenticatedResearchRouteImport.update({
+  id: '/research',
+  path: '/research',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedResearchIndexRoute =
+  AuthenticatedResearchIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedResearchRoute,
+  } as any)
+const AuthenticatedResearchConversationIdRoute =
+  AuthenticatedResearchConversationIdRouteImport.update({
+    id: '/$conversationId',
+    path: '/$conversationId',
+    getParentRoute: () => AuthenticatedResearchRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/research': typeof AuthenticatedResearchRouteWithChildren
+  '/research/$conversationId': typeof AuthenticatedResearchConversationIdRoute
+  '/research/': typeof AuthenticatedResearchIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/research/$conversationId': typeof AuthenticatedResearchConversationIdRoute
+  '/research': typeof AuthenticatedResearchIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/research': typeof AuthenticatedResearchRouteWithChildren
+  '/_authenticated/research/$conversationId': typeof AuthenticatedResearchConversationIdRoute
+  '/_authenticated/research/': typeof AuthenticatedResearchIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    '/' | '/auth' | '/research' | '/research/$conversationId' | '/research/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/auth' | '/research/$conversationId' | '/research'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/research'
+    | '/_authenticated/research/$conversationId'
+    | '/_authenticated/research/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +101,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/research': {
+      id: '/_authenticated/research'
+      path: '/research'
+      fullPath: '/research'
+      preLoaderRoute: typeof AuthenticatedResearchRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/research/': {
+      id: '/_authenticated/research/'
+      path: '/'
+      fullPath: '/research/'
+      preLoaderRoute: typeof AuthenticatedResearchIndexRouteImport
+      parentRoute: typeof AuthenticatedResearchRoute
+    }
+    '/_authenticated/research/$conversationId': {
+      id: '/_authenticated/research/$conversationId'
+      path: '/$conversationId'
+      fullPath: '/research/$conversationId'
+      preLoaderRoute: typeof AuthenticatedResearchConversationIdRouteImport
+      parentRoute: typeof AuthenticatedResearchRoute
+    }
   }
 }
 
+interface AuthenticatedResearchRouteChildren {
+  AuthenticatedResearchConversationIdRoute: typeof AuthenticatedResearchConversationIdRoute
+  AuthenticatedResearchIndexRoute: typeof AuthenticatedResearchIndexRoute
+}
+
+const AuthenticatedResearchRouteChildren: AuthenticatedResearchRouteChildren = {
+  AuthenticatedResearchConversationIdRoute:
+    AuthenticatedResearchConversationIdRoute,
+  AuthenticatedResearchIndexRoute: AuthenticatedResearchIndexRoute,
+}
+
+const AuthenticatedResearchRouteWithChildren =
+  AuthenticatedResearchRoute._addFileChildren(
+    AuthenticatedResearchRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedResearchRoute: typeof AuthenticatedResearchRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedResearchRoute: AuthenticatedResearchRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
