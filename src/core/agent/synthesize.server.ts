@@ -79,7 +79,7 @@ export async function synthesizeAnswer(opts: {
     role: "reasoning",
     temperature: 0.25,
     maxTokens: 2200,
-    signal: opts.signal,
+    ...(opts.signal ? { signal: opts.signal } : {}),
     messages,
   });
 
@@ -89,7 +89,7 @@ export async function synthesizeAnswer(opts: {
   const citations = opts.grounded ? verifyCitations(answer, opts.evidence) : [];
   const [followUps, evaluation] = await Promise.all([
     proposeFollowUps(opts.question, answer, opts.signal),
-    opts.grounded ? evaluateAnswer({ question: opts.question, answer, evidence: opts.evidence, citations, signal: opts.signal }) : Promise.resolve(null),
+    opts.grounded ? evaluateAnswer({ question: opts.question, answer, evidence: opts.evidence, citations, ...(opts.signal ? { signal: opts.signal } : {}) }) : Promise.resolve(null),
   ]);
 
   return {
@@ -142,7 +142,7 @@ export function stripInvalidMarkers(answer: string, evidence: EvidenceItem[]): s
   return answer.replace(/\[(\d{1,2})\]/g, (full, n) => (valid.has(Number(n)) ? full : ""));
 }
 
-async function proposeFollowUps(question: string, answer: string, signal?: AbortSignal): Promise<string[]> {
+async function proposeFollowUps(question: string, answer: string, signal?: AbortSignal | undefined): Promise<string[]> {
   try {
     const res = await routeCompletion({
       role: "fast",

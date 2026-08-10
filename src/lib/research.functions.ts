@@ -162,7 +162,7 @@ export const askQuestion = createServerFn({ method: "POST" })
           user_id: context.userId,
           role: "assistant",
           content: result.answer,
-          data: payload as unknown as Record<string, unknown>,
+          data: payload as never,
           run_id: result.runId,
         })
         .select("id")

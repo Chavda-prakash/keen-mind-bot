@@ -24,7 +24,7 @@ const searchOutput = z.object({
 
 /** Real web search only — an empty hit list is returned rather than invented results. */
 export const webSearchTool: ToolDefinition<
-  { query: string; limit?: number; freshness?: "day" | "week" | "month" | "year" },
+  { query: string; limit?: number | undefined; freshness?: "day" | "week" | "month" | "year" | undefined },
   z.infer<typeof searchOutput>
 > = {
   name: "web_search",
@@ -91,8 +91,8 @@ export const webReadTool: ToolDefinition<{ url: string; query: string }, z.infer
   worksOffline: false,
   async execute(input, ctx) {
     const page = await readPage(input.url, {
-      allowedDomains: ctx.allowedDomains,
-      signal: ctx.signal,
+      ...(ctx.allowedDomains ? { allowedDomains: ctx.allowedDomains } : {}),
+      ...(ctx.signal ? { signal: ctx.signal } : {}),
     });
     const passages = extractRelevantPassages(page.text, input.query, { maxPassages: 4 });
     return {
@@ -123,7 +123,7 @@ const kbOutput = z.object({
 });
 
 /** Semantic search over the workspace's uploaded documents (RAG retrieval). */
-export const knowledgeSearchTool: ToolDefinition<{ query: string; limit?: number }, z.infer<typeof kbOutput>> = {
+export const knowledgeSearchTool: ToolDefinition<{ query: string; limit?: number | undefined }, z.infer<typeof kbOutput>> = {
   name: "knowledge_search",
   description: "Semantic search across documents uploaded to this workspace.",
   inputSchema: z.object({ query: z.string().min(2).max(400), limit: z.number().int().min(1).max(20).optional() }),
