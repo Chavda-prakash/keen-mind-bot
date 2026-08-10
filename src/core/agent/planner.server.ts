@@ -12,7 +12,7 @@ Rules:
 export async function analyzeIntent(opts: {
   question: string;
   mode: ResearchMode;
-  history?: { role: string | undefined; content: string }[];
+  history?: { role: string | undefined; content: string }[] | undefined;
   memories?: string[] | undefined;
   maxQueries: number;
   signal?: AbortSignal | undefined;

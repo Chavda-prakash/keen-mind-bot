@@ -50,7 +50,7 @@ function renderEvidence(evidence: EvidenceItem[]): string {
 export async function synthesizeAnswer(opts: {
   question: string;
   evidence: EvidenceItem[];
-  history?: { role: string | undefined; content: string }[];
+  history?: { role: string | undefined; content: string }[] | undefined;
   memories?: string[] | undefined;
   workspaceInstructions?: string | null | undefined;
   grounded: boolean;

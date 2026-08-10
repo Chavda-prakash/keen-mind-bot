@@ -17,8 +17,8 @@ export function AnswerMarkdown({
   onCitationClick,
 }: {
   text: string;
-  sources?: CitationTarget[];
-  onCitationClick?: (marker: number) => void;
+  sources?: CitationTarget[] | undefined;
+  onCitationClick?: ((marker: number) => void) | undefined;
 }) {
   const blocks = text.replace(/\r\n/g, "\n").split(/\n{2,}/);
   return (
@@ -36,8 +36,8 @@ function Block({
   onCitationClick,
 }: {
   block: string;
-  sources?: CitationTarget[];
-  onCitationClick?: (marker: number) => void;
+  sources?: CitationTarget[] | undefined;
+  onCitationClick?: ((marker: number) => void) | undefined;
 }) {
   const lines = block.split("\n");
 
