@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedKnowledgeRouteImport } from './routes/_authenticated/knowledge'
 import { Route as AuthenticatedResearchRouteImport } from './routes/_authenticated/research'
 import { Route as AuthenticatedResearchIndexRouteImport } from './routes/_authenticated/research.index'
 import { Route as AuthenticatedResearchConversationIdRouteImport } from './routes/_authenticated/research.$conversationId'
@@ -29,6 +30,11 @@ const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedKnowledgeRoute = AuthenticatedKnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedResearchRoute = AuthenticatedResearchRouteImport.update({
   id: '/research',
@@ -51,6 +57,7 @@ const AuthenticatedResearchConversationIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/knowledge': typeof AuthenticatedKnowledgeRoute
   '/research': typeof AuthenticatedResearchRouteWithChildren
   '/research/$conversationId': typeof AuthenticatedResearchConversationIdRoute
   '/research/': typeof AuthenticatedResearchIndexRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/knowledge': typeof AuthenticatedKnowledgeRoute
   '/research/$conversationId': typeof AuthenticatedResearchConversationIdRoute
   '/research': typeof AuthenticatedResearchIndexRoute
 }
@@ -66,6 +74,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/knowledge': typeof AuthenticatedKnowledgeRoute
   '/_authenticated/research': typeof AuthenticatedResearchRouteWithChildren
   '/_authenticated/research/$conversationId': typeof AuthenticatedResearchConversationIdRoute
   '/_authenticated/research/': typeof AuthenticatedResearchIndexRoute
@@ -73,14 +82,20 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/research' | '/research/$conversationId' | '/research/'
+    | '/'
+    | '/auth'
+    | '/knowledge'
+    | '/research'
+    | '/research/$conversationId'
+    | '/research/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/research/$conversationId' | '/research'
+  to: '/' | '/auth' | '/knowledge' | '/research/$conversationId' | '/research'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/knowledge'
     | '/_authenticated/research'
     | '/_authenticated/research/$conversationId'
     | '/_authenticated/research/'
@@ -114,6 +129,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/knowledge': {
+      id: '/_authenticated/knowledge'
+      path: '/knowledge'
+      fullPath: '/knowledge'
+      preLoaderRoute: typeof AuthenticatedKnowledgeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/research': {
       id: '/_authenticated/research'
@@ -156,10 +178,12 @@ const AuthenticatedResearchRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedKnowledgeRoute: typeof AuthenticatedKnowledgeRoute
   AuthenticatedResearchRoute: typeof AuthenticatedResearchRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedKnowledgeRoute: AuthenticatedKnowledgeRoute,
   AuthenticatedResearchRoute: AuthenticatedResearchRouteWithChildren,
 }
 
