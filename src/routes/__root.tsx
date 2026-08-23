@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
@@ -119,6 +120,42 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    let active = true;
+
+    const continueAuthenticatedSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!active || !data.session) return;
+
+      if (window.location.pathname === "/" || window.location.pathname === "/auth") {
+        await router.navigate({ to: "/research", replace: true });
+      }
+    };
+
+    void continueAuthenticatedSession();
+
+    const { data: subscription } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+
+      void router.invalidate();
+      if (event !== "SIGNED_OUT") void queryClient.invalidateQueries();
+
+      if (
+        event === "SIGNED_IN" &&
+        session &&
+        (window.location.pathname === "/" || window.location.pathname === "/auth")
+      ) {
+        void router.navigate({ to: "/research", replace: true });
+      }
+    });
+
+    return () => {
+      active = false;
+      subscription.subscription.unsubscribe();
+    };
+  }, [queryClient, router]);
 
   return (
     <QueryClientProvider client={queryClient}>

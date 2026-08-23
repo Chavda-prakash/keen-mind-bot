@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Compass, Loader2 } from "lucide-react";
+import { CheckCircle2, Compass, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -27,32 +28,29 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/research" });
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) navigate({ to: "/research" });
-    });
-    return () => sub.subscription.unsubscribe();
-  }, [navigate]);
+  const [confirmationEmail, setConfirmationEmail] = useState<string | null>(null);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: { emailRedirectTo: `${window.location.origin}/auth` },
         });
         if (error) throw error;
-        toast.success("Account created. Check your inbox if confirmation is required.");
+        if (data.session) {
+          await navigate({ to: "/research", replace: true });
+          return;
+        }
+        setConfirmationEmail(email);
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        if (!data.session) throw new Error("Sign in completed without a session. Please try again.");
+        await navigate({ to: "/research", replace: true });
       }
     } catch (error) {
       toast.error((error as Error).message);
@@ -72,6 +70,21 @@ function AuthPage() {
           <p className="text-sm text-muted-foreground">Cited, evidence-first AI research.</p>
         </div>
 
+        {confirmationEmail ? (
+          <div className="space-y-4 rounded-lg border border-border bg-card p-5 text-center">
+            <CheckCircle2 className="mx-auto h-7 w-7 text-primary" />
+            <div>
+              <h2 className="text-sm font-semibold">Check your email</h2>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                We sent a verification link to {confirmationEmail}. Open it in this browser and you’ll continue to
+                your research workspace automatically.
+              </p>
+            </div>
+            <Button type="button" variant="outline" className="w-full" onClick={() => setConfirmationEmail(null)}>
+              Back to sign in
+            </Button>
+          </div>
+        ) : (
         <form onSubmit={submit} className="space-y-3">
           <input
             type="email"
@@ -90,23 +103,25 @@ function AuthPage() {
             placeholder="Password"
             className="w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm outline-none focus:border-primary"
           />
-          <button
+          <Button
             type="submit"
             disabled={busy}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-60"
+            className="w-full"
           >
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             {mode === "signup" ? "Create account" : "Sign in"}
-          </button>
+          </Button>
         </form>
+        )}
 
-        <button
+        {!confirmationEmail ? <Button
           type="button"
+          variant="ghost"
           onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          className="w-full text-center text-xs text-muted-foreground hover:text-foreground"
+          className="w-full text-xs text-muted-foreground"
         >
           {mode === "signin" ? "No account? Create one" : "Already have an account? Sign in"}
-        </button>
+        </Button> : null}
       </div>
     </main>
   );
