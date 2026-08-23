@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, Outlet, createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Compass, FileText, LogOut, Plus, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteConversation, listConversations } from "@/lib/research.functions";
 
@@ -63,29 +64,33 @@ function ResearchLayout() {
                 >
                   {c.title}
                 </Link>
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={() => removeMutation.mutate(c.id)}
-                  className="opacity-0 transition-opacity group-hover:opacity-100"
+                  className="h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100"
                   aria-label={`Delete ${c.title}`}
                 >
                   <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
-                </button>
+                </Button>
               </li>
             ))}
           </ul>
         </div>
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={async () => {
-            await supabase.auth.signOut();
+            await queryClient.cancelQueries();
             queryClient.clear();
-            navigate({ to: "/auth" });
+            await supabase.auth.signOut();
+            await navigate({ to: "/auth", replace: true });
           }}
-          className="flex items-center gap-2 border-t border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground"
+          className="h-auto justify-start rounded-none border-t border-border px-4 py-3 text-sm text-muted-foreground"
         >
           <LogOut className="h-4 w-4" /> Sign out
-        </button>
+        </Button>
       </aside>
       <main className="min-w-0 flex-1">
         <Outlet />
