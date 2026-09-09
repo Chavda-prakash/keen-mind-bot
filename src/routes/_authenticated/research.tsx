@@ -1,9 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, Outlet, createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Compass, FileText, LogOut, Plus, Trash2 } from "lucide-react";
+import { Compass, FileText, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { deleteConversation, listConversations } from "@/lib/research.functions";
 
 export const Route = createFileRoute("/_authenticated/research")({
@@ -78,19 +77,6 @@ function ResearchLayout() {
             ))}
           </ul>
         </div>
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={async () => {
-            await queryClient.cancelQueries();
-            queryClient.clear();
-            await supabase.auth.signOut();
-            await navigate({ to: "/auth", replace: true });
-          }}
-          className="h-auto justify-start rounded-none border-t border-border px-4 py-3 text-sm text-muted-foreground"
-        >
-          <LogOut className="h-4 w-4" /> Sign out
-        </Button>
       </aside>
       <main className="min-w-0 flex-1">
         <Outlet />
