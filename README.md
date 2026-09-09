@@ -1,770 +1,433 @@
-# Research Companion
+# CIEL: Cited AI Research Agent
 
-Task: You are a senior AI-agent architect, full-stack engineer, research-system engineer, and security engineer. Your job is to transform my existing project into a complete Perplexity-style personal AI research agent, not just an MVP, demo, UI mockup, or API wrapper.
+An open-source, **evidence-driven AI research agent** that performs web searches, reads sources, collects citations, and synthesizes **cited answers** with inline `[n]` markers you can click to verify.
 
-First inspect the entire existing project, including its frontend, backend, configuration, dependencies, routes, components, research flow, current Perplexity integration, history system, exports, and n8n hand-off. Reuse working code where appropriate instead of unnecessarily rebuilding everything.
+Every factual claim is traceable to retrieved evidence. No invented citations. No hallucinated sources.
 
-Please repeat the prompt back as you understand it, then inspect the project and create an implementation plan. After that, implement the system phase by phase. Do not stop after creating a plan. Do not leave major features as fake/demo placeholders when they can be implemented locally. Run the application, test the implemented features, fix errors, and continue until the core agent is functional.
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![TypeScript](https://img.shields.io/badge/Language-TypeScript-blue.svg)
+![TanStack Start](https://img.shields.io/badge/Framework-TanStack%20Start-blueviolet.svg)
 
-Specifics:
+---
 
-Build a real agent, not merely a chat interface.
+## 🎯 Features
 
-The agent must understand the user's intent.
+✅ **Real Web Search**
+- Multi-provider search (Tavily, Brave, DuckDuckGo with automatic fallback)
+- No invented results
+- Fresh information filtering
+- Provider failover when one is down
 
-Break complex requests into smaller tasks.
+✅ **Verified Citations**
+- Every `[n]` marker maps to exact evidence passage
+- Claims linked to retrieved sources
+- Self-evaluation detects unsupported statements
+- Citation verification before finalizing answer
 
-Create a task plan before executing complex research.
+✅ **Your Documents** (RAG)
+- Upload PDFs, DOCX, images, spreadsheets
+- Semantic search over your knowledge base
+- Same citation pipeline applies
+- Document-level and page-level tracking
 
-Maintain agent state such as planning, searching, reading, reasoning, verifying, answering, acting, completed, and failed.
+✅ **Multiple Research Modes**
+- **Quick**: Fast single-pass research
+- **Deep**: Multi-round iterative research with self-evaluation
+- **Knowledge**: Search only your uploaded documents
+- **Local**: Offline mode (local LLM + local knowledge)
 
-Support multi-step tasks and tool execution.
+✅ **Transparent Agent Architecture**
+- State machine: planning → searching → reading → reasoning → verifying → answering
+- Full pipeline auditability
+- Every tool call logged
+- Self-evaluation before finalizing answer
+- Provider/model agnostic design
 
-Allow the agent to retry, recover, or change strategy when a tool or source fails.
+✅ **Extensible & Decoupled**
+- Swap LLM providers without rewriting code
+- Add search engines via adapter interface
+- Plug new tools into registry
+- Local-first architecture (Ollama compatible)
 
-Make the architecture provider-independent.
+---
 
-Do not hard-code the entire system around Perplexity.
+## 🚀 Quick Start
 
-Create interfaces/adapters for LLM providers, search providers, embeddings, browser automation, storage, and external tools.
+### Prerequisites
 
-Support a local-model path such as Ollama/llama.cpp/LM Studio where practical.
+- **Node.js** 18+ or **Bun**
+- **Supabase** account (free tier works) OR local Postgres
+- Optional: Lovable API key, Tavily/Brave search keys, local Ollama
 
-External APIs must be optional adapters, not mandatory for the core architecture.
+### Installation
 
-If live web search requires an external provider, clearly separate that provider from the agent itself.
+```bash
+# Clone the repository
+git clone https://github.com/Chavda-prakash/keen-mind-bot.git
+cd keen-mind-bot
 
-Never pretend that a local LLM has fresh web knowledge when it does not.
+# Install dependencies
+npm install
+# or
+bun install
 
-Build the research engine.
+# Copy example config
+cp .env.example .env
 
-Accept a normal user question.
+# Edit .env with your credentials
+nano .env
 
-Analyze the question.
-
-Decide whether web research is necessary.
-
-Generate one or more search queries for complex questions.
-
-Search multiple sources when appropriate.
-
-Retrieve relevant pages/content.
-
-Extract useful passages rather than blindly sending entire pages to the model.
-
-Remove duplicate or low-value sources.
-
-Prefer authoritative and diverse sources.
-
-Consider freshness when the question requires current information.
-
-Re-search when the evidence is insufficient.
-
-Synthesize the final answer from collected evidence.
-
-Build a proper citation and evidence system.
-
-Every web-grounded factual claim should be traceable to evidence whenever possible.
-
-Store source URL, title, domain, publication date if available, author if available, retrieved time, relevant excerpt, and citation ID.
-
-Render citations cleanly in the answer.
-
-Clicking a citation should open the corresponding source or source preview.
-
-Do not create fake citations.
-
-Do not cite a source merely because it appeared in search results.
-
-Add an internal claim → evidence → source relationship.
-
-Detect unsupported claims before producing the final answer.
-
-If reliable sources disagree, explicitly represent the disagreement instead of inventing certainty.
-
-Build multiple research modes.
-
-Quick Search: fast web-grounded answer.
-
-Deep Research: multi-query, multi-source, iterative research.
-
-File/Knowledge Research: answer from uploaded/private knowledge.
-
-Local Research: use local models and local knowledge where possible.
-
-Keep the architecture extensible for future specialized modes.
-
-Do not claim to reproduce proprietary internal Perplexity algorithms. Reproduce the observable user-facing capabilities using a transparent architecture.
-
-Build a model-routing layer.
-
-Allow different models to be selected for different tasks.
-
-Use lightweight models for simple classification/extraction when appropriate.
-
-Use stronger models for difficult reasoning.
-
-Support local models first where practical.
-
-Keep model configuration outside the business logic.
-
-Add fallback models/providers where possible.
-
-Never make the application depend on one model provider.
-
-Add an optional multi-model comparison system.
-
-Allow a difficult query to be sent to multiple configured models.
-
-Compare their answers.
-
-Identify agreement and disagreement.
-
-Have a final synthesis step.
-
-Make this optional so normal queries do not waste resources.
-
-Do not require paid APIs for the basic agent architecture.
-
-Build a real tool system.
-Create a registry and permission model for tools such as:
-
-web search
-
-web/page reader
-
-browser automation
-
-PDF/document reader
-
-OCR
-
-file parser
-
-private knowledge search
-
-calculator
-
-code execution where safely sandboxed
-
-SQL/database access
-
-report generation
-
-export
-
-n8n workflows
-
-email/connectors
-
-future tools
-
-Each tool must have:
-
-name
-
-description
-
-input schema
-
-output schema
-
-permissions
-
-timeout
-
-retry policy
-
-error handling
-
-audit information
-
-Add tool selection and execution.
-
-The agent should decide which tool is appropriate.
-
-Validate tool arguments before execution.
-
-Never blindly execute arbitrary model-generated commands.
-
-Validate outputs before passing them into later steps.
-
-Record every tool call and result in the agent run history.
-
-Support cancellation and failure recovery.
-
-Build a secure browser-agent foundation for future use.
-
-Use Playwright or an equivalent browser automation layer.
-
-Support navigation, page reading, clicking, typing, screenshots, and structured extraction.
-
-Treat webpage content as untrusted data.
-
-Defend against prompt injection from webpages.
-
-Maintain an allowed-domain/permission mechanism.
-
-Require human approval before irreversible or sensitive actions such as purchases, deletion, account changes, sending messages, or final form submission.
-
-Keep browser automation modular so it can be enabled later without redesigning the agent.
-
-Build document intelligence.
-Support:
-
-PDF
-
-DOC/DOCX
-
-XLS/XLSX
-
-CSV
-
-TXT/Markdown
-
-images/scanned documents through OCR where practical
-
-Implement:
-
-upload
-
-validation
-
-text extraction
-
-metadata
-
-chunking
-
-embeddings
-
-vector/semantic search
-
-keyword/hybrid search where appropriate
-
-document-level and page-level citations
-
-deletion
-
-re-indexing
-
-private-per-user/per-workspace access control
-
-Build a proper RAG system.
-
-Separate ingestion from retrieval.
-
-Store document metadata.
-
-Retrieve only relevant context.
-
-Prevent unrelated users/workspaces from accessing private documents.
-
-Support source attribution.
-
-Make the vector database replaceable.
-
-Allow a local vector store for local-first operation.
-
-Build working memory and long-term memory.
-Working memory:
-
-current task
-
-current plan
-
-current sources
-
-current tool results
-
-current reasoning context
-
-Long-term memory:
-
-user preferences
-
-projects
-
-important facts explicitly worth remembering
-
-previous research
-
-workspace knowledge
-
-Do not store everything blindly. Add memory selection, privacy controls, deletion, and inspection.
-
-Build Projects/Spaces.
-Each workspace/project should be able to contain:
-
-conversations
-
-instructions
-
-files
-
-sources
-
-memories
-
-research reports
-
-agent runs
-
-future workflows
-
-Build persistent storage.
-Replace browser-only history with a proper database architecture.
-Store at minimum:
-
-users
-
-workspaces
-
-conversations
-
-messages
-
-agent runs
-
-tasks
-
-tool calls
-
-sources
-
-citations
-
-files
-
-memories
-
-reports
-
-jobs
-
-audit events
-
-Keep the database layer modular so SQL Server/PostgreSQL can be selected through configuration.
-
-Preserve and improve the current Sutradhar functionality.
-Do not remove working features such as:
-
-Quick Search
-
-Deep Research
-
-source trail
-
-follow-up questions
-
-research history
-
-Markdown/report export
-
-current project UI
-
-existing API integration
-
-n8n hand-off
-
-Improve them where necessary so they become part of the real agent architecture rather than isolated demo features.
-
-Add streaming and real-time agent status.
-The UI should show meaningful states such as:
-
-Understanding request
-
-Planning research
-
-Searching
-
-Reading sources
-
-Comparing evidence
-
-Verifying citations
-
-Generating answer
-
-Completed
-
-Do not expose hidden chain-of-thought. Show only safe high-level progress/status.
-
-Add self-evaluation.
-Before finalizing an answer, evaluate:
-
-Did the agent actually answer the user's request?
-
-Is the information sufficiently supported?
-
-Are citations attached to the appropriate claims?
-
-Are sources relevant and sufficiently diverse?
-
-Are there contradictions?
-
-Is anything uncertain?
-
-Should another search be performed?
-
-If evidence is insufficient, continue researching or clearly state the limitation.
-
-Add context management.
-
-Prevent huge conversations from overflowing model context.
-
-Summarize older context when appropriate.
-
-Preserve important facts, instructions, sources, and task state.
-
-Keep current task context separate from long-term memory.
-
-Add scheduled/background capability as an extension point.
-Design the architecture so future jobs can perform:
-
-daily research
-
-competitor monitoring
-
-recurring reports
-
-news monitoring
-
-scheduled document processing
-
-notifications
-
-Do not make n8n mandatory for the core agent.
-
-Add n8n as an optional integration layer.
-
-Keep the current n8n hand-off.
-
-Create a clean webhook/workflow adapter.
-
-Support authenticated webhooks.
-
-Send structured payloads.
-
-Receive workflow status/results where practical.
-
-Do not allow n8n integration to block the local core agent.
-
-Advanced automation can be added later through this interface.
-
-Build an external connector architecture.
-Keep future connectors possible for services such as email, cloud storage, messaging, calendars, and business systems.
-Each connector must have isolated permissions and credentials.
-Never expose secrets to the frontend.
-
-Add security from the beginning.
-Implement:
-
-authentication
-
-authorization
-
-workspace isolation
-
-secure sessions/tokens
-
-secret management
-
-API-key protection
-
-input validation
-
-output validation
-
-file validation
-
-HTML sanitization
-
-SQL injection protection
-
-SSRF protection
-
-webhook authentication
-
-rate limiting
-
-prompt-injection defenses
-
-audit logging
-
-safe browser permissions
-
-Add observability.
-For every agent run, track:
-
-run ID
-
-user/workspace
-
-start/end time
-
-current state
-
-tools used
-
-sources
-
-errors
-
-retries
-
-model/provider
-
-latency
-
-token/cost information when available
-
-final status
-
-Provide a developer/admin view for diagnosing failures.
-
-Add background jobs and queues.
-Long-running Deep Research, file ingestion, scheduled tasks, and report generation should not depend on a single synchronous HTTP request.
-Create a worker/queue abstraction that can initially run locally and later scale.
-
-Add artifacts and exports.
-The agent should be able to create and manage:
-
-Markdown
-
-PDF
-
-CSV
-
-Excel
-
-structured JSON
-
-research reports
-
-Keep generated artifacts associated with the conversation/project and allow secure download.
-
-Add graceful failure handling.
-If a search provider fails, use another configured provider if available.
-If a source fails, continue with other sources.
-If a model fails, use a configured fallback.
-If a tool times out, retry according to policy.
-Never fabricate successful results.
-
-Add provider configuration.
-All providers, models, URLs, limits, and feature flags must be configurable.
-No secrets or provider-specific settings should be hard-coded into frontend code.
-
-Add local-first operation.
-The application must have a meaningful local mode.
-At minimum, design for:
-
-local LLM
-
-local embeddings
-
-local database
-
-local document RAG
-
-local browser automation
-
-local agent orchestration
-
-Clearly distinguish local/offline capabilities from live-internet capabilities.
-Do not falsely claim that offline mode can provide current web information.
-
-Do not stop at an MVP.
-Treat this as a complete product build.
-If a feature cannot reasonably be completed in the current environment because an external credential/service is required, implement the complete abstraction, configuration, validation, error handling, and local alternative where possible, then clearly identify the external dependency.
-
-Do not fake functionality.
-Do not create buttons that only display “coming soon” when the underlying functionality can be implemented.
-Do not use hard-coded fake search results.
-Do not generate fake citations.
-Do not claim a feature works unless it has been tested.
-
-Work incrementally but continue through all phases.
-Use this implementation order:
-Phase 1 — inspect and stabilize existing project
-Phase 2 — agent core and state machine
-Phase 3 — search/research engine
-Phase 4 — evidence and citation engine
-Phase 5 — model/provider routing
-Phase 6 — persistent database and memory
-Phase 7 — file intelligence and RAG
-Phase 8 — tool system
-Phase 9 — security and permissions
-Phase 10 — browser foundation
-Phase 11 — n8n/connectors
-Phase 12 — background jobs
-Phase 13 — observability/admin
-Phase 14 — production hardening
-Phase 15 — full end-to-end testing
-
-At the beginning of implementation, inspect the repository and produce:
-
-current architecture
-
-current working features
-
-incomplete features
-
-technical debt
-
-security issues
-
-files that should be reused
-
-files that should be replaced
-
-recommended implementation order
-
-Then implement the work.
-For every phase:
-
-explain the goal briefly
-
-make the required code changes
-
-create missing files
-
-update existing files
-
-install only necessary dependencies
-
-run tests/build/lint where available
-
-fix errors
-
-verify the feature
-
-move to the next phase
-
-Maintain clean architecture.
-Separate:
-
-UI
-
-API
-
-agent orchestration
-
-model providers
-
-search providers
-
-tools
-
-RAG
-
-memory
-
-database
-
-browser automation
-
-integrations
-
-security
-
-background workers
-
-Make the final system extensible.
-I should be able to add a new:
-
-LLM
-
-search provider
-
-browser tool
-
-connector
-
-vector database
-
-workflow provider
-
-automation
-without rewriting the entire application.
-
-Testing is mandatory.
-Create tests for:
-
-query planning
-
-tool selection
-
-search failures
-
-citation mapping
-
-source conflicts
-
-RAG retrieval
-
-permissions
-
-authentication
-
-prompt injection defense
-
-browser approval flow
-
-memory isolation
-
-API failure/fallback
-
-end-to-end research
-
-Final acceptance criteria:
-The completed system should be able to receive a complex user request, determine what it needs, plan the task, search/read relevant information, use appropriate tools, collect and verify evidence, generate a useful cited answer, remember relevant context, use private documents when authorized, recover from failures, and safely execute approved actions.
-
-It must work as a real agent rather than a static chatbot.
-
-Important constraint:
-Do not attempt to reproduce or claim knowledge of proprietary internal Perplexity implementation details. Recreate the user-facing capabilities and behavior using an independent, transparent architecture.
-
-Most important instruction:
-Do not stop after giving me architecture, explanations, pseudocode, or a TODO list. Inspect the existing project and actually implement as much of the system as the environment allows. When an external API, credential, browser, model, or service is genuinely required, isolate it behind a proper adapter and provide a working local/test implementation where possible.
-
-At the end, provide:
-
-what was already present
-
-what you changed
-
-what is now fully working
-
-what requires an external service/key
-
-how to run the complete system
-
-how to test every major capability
-
-remaining limitations, if any
-
-the exact next command/action needed to continue
-
-This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://keen-mind-bot.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/b771c686-0116-4f60-9592-2836ba49d422).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+# Start development server
 npm run dev
 ```
+
+**Open:** `http://localhost:5173`
+
+---
+
+## 🔧 Configuration
+
+All configuration is **environment-driven** and read-only. No secrets in frontend code.
+
+### Core Environment Variables
+
+```bash
+# Supabase (Required)
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_PUBLISHABLE_KEY=your_anon_key
+
+# LLM Providers (at least one)
+LOVABLE_API_KEY=your_api_key              # Paid proxy service
+AGENT_LOCAL_MODE=0                        # Set to 1 for local Ollama
+
+# Search Providers (optional; DuckDuckGo is free fallback)
+TAVILY_API_KEY=your_api_key
+BRAVE_SEARCH_API_KEY=your_api_key
+
+# Model Configuration (optional)
+MODEL_FAST=google/gemini-3.1-flash-lite
+MODEL_REASONING=google/gemini-3.6-flash
+
+# Agent Limits (optional)
+AGENT_MAX_QUERIES=5                       # Max search queries per research round
+AGENT_MAX_PAGES=8                         # Max pages to read
+AGENT_MAX_LOOPS=2                         # Deep research iterations
+AGENT_FETCH_TIMEOUT_MS=12000
+```
+
+See **[.env.example](.env.example)** for all options.
+
+---
+
+## 📖 Usage
+
+### Via Web Interface
+
+1. **Landing Page** — Overview of features
+2. **Start Researching** — Choose research mode:
+   - Quick Search (fast, single pass)
+   - Deep Research (iterative, self-evaluating)
+   - Knowledge Files (your docs only)
+   - Local Research (offline)
+3. **Ask Question** — Get cited answer in seconds
+4. **Inspect Sources** — Click `[n]` markers to view evidence
+
+### Via API (Server Functions)
+
+```typescript
+import { askQuestion } from "@/lib/research.functions";
+
+const result = await askQuestion({
+  conversationId: "uuid-or-null",  // null = new conversation
+  workspaceId: "uuid",
+  question: "How does photosynthesis work?",
+  mode: "quick"                     // "quick" | "deep" | "files" | "local"
+});
+
+// Result contains:
+// - answer: string (with [n] markers)
+// - sources: Array<{url, title, domain, excerpt}>
+// - citations: Array<{marker, claim, excerpt, supported}>
+// - evaluation: {answeredRequest, sufficientlySupported, ...}
+// - followUps: string[]
+```
+
+---
+
+## 🏗️ Architecture
+
+**10,000-foot view:**
+
+```
+┌─────────────┐
+│   React UI  │ (TanStack Start, Radix UI)
+└──────┬──────┘
+       │
+┌──────▼───────────────────────────────────────┐
+│  Server-Side Agent Pipeline (TypeScript)     │
+│                                               │
+│  1. Planning       → Analyze intent & queries │
+│  2. Knowledge      → Search user docs (RAG)   │
+│  3. Web Search     → Multi-provider search    │
+│  4. Reading        → Fetch & extract pages    │
+│  5. Reasoning      → LLM synthesis            │
+│  6. Verification   → Citation verification    │
+│  7. Persistence    → Save to database         │
+└──────┬───────────────────────────────────────┘
+       │
+┌──────▼──────────────────┬──────────────┬────────────────┐
+│   Supabase              │  LLM Router  │  Search Router │
+│   (PostgreSQL + Auth)   │  (Lovable,   │  (Tavily,      │
+│                         │   Ollama)    │   Brave, DDG)  │
+└─────────────────────────┴──────────────┴────────────────┘
+```
+
+**Key Design Principles:**
+
+- ✅ **Provider-agnostic** — Swap LLM/search providers without code changes
+- ✅ **Transparent** — Every step logged, auditable, replayable
+- ✅ **Fault-tolerant** — Provider failures trigger fallback, never fake results
+- ✅ **Local-first** — Works offline with Ollama + local knowledge base
+- ✅ **Extensible** — Add tools, search providers, LLM adapters via interfaces
+
+**Full Architecture:** See [ARCHITECTURE.md](ARCHITECTURE.md)
+
+---
+
+## 📂 Project Structure
+
+```
+keen-mind-bot/
+├── src/
+│   ├── core/
+│   │   ├── agent/              Agent orchestrator & state machine
+│   │   │   ├── orchestrator.server.ts    Main research pipeline
+│   │   │   ├── planner.server.ts         Intent analysis & query gen
+│   │   │   ├── synthesize.server.ts      LLM synthesis & verification
+│   │   │   └── types.ts                  TypeScript interfaces
+│   │   ├── providers/          LLM, search, embeddings adapters
+│   │   │   ├── llm/            Lovable, Ollama
+│   │   │   ├── search/         Tavily, Brave, DuckDuckGo, Wikipedia
+│   │   │   ├── reader/         Page fetching & extraction
+│   │   │   └── embeddings/     Vector generation
+│   │   ├── rag/                Document upload & vector search
+│   │   ├── security/           Injection defense, sanitization
+│   │   ├── tools/              Tool registry & implementations
+│   │   └── config.ts           Environment-driven configuration
+│   ├── components/
+│   │   ├── research/           Chat view, source cards, markdown
+│   │   └── ui/                 Radix UI primitives
+│   ├── lib/
+│   │   ├── research.functions.ts    Server RPC handlers
+│   │   ├── owner-context.ts         Auth middleware
+│   │   └── error-*.ts               Error handling
+│   ├── routes/                 TanStack file-based routing
+│   ├── server.ts               Cloudflare Workers entry
+│   └── styles.css              Tailwind CSS
+├── supabase/
+│   ├── migrations/             Database schema
+│   └── config.toml
+├── .env.example                Environment variable template
+├── ARCHITECTURE.md             Detailed design docs
+├── package.json
+└── tsconfig.json
+```
+
+---
+
+## 🔒 Security
+
+### Built-in Protections
+
+✅ **Prompt Injection Defense**
+- HTML sanitization on all web content
+- Detects suspicious patterns (URLs, repeated keywords)
+- Never passes raw content to LLM
+
+✅ **Workspace Isolation**
+- Every user has 1+ workspaces
+- All data scoped to workspace
+- Database enforces `workspace_id` checks
+
+✅ **Permission System**
+- Tools have required permissions
+- Agent checks before execution
+- Audit log every tool call
+
+✅ **Input Validation**
+- Zod schemas for all inputs
+- Max lengths enforced
+- Type-safe throughout
+
+### Deployment Security
+
+- **No secrets in code** — All env vars
+- **Auth enforced** — Supabase JWT tokens
+- **HTTPS only** — TLS in production
+- **Audit trail** — Every action logged
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run tests
+npm test
+
+# Lint
+npm run lint
+
+# Format
+npm run format
+```
+
+**Test Coverage:**
+- Query planning & intent analysis
+- Citation verification
+- Injection detection
+- Permission checks
+- Provider fallback behavior
+- Database persistence
+
+---
+
+## 🌍 Deployment
+
+### Local Development
+
+```bash
+npm run dev
+```
+
+### Production (Vercel)
+
+```bash
+npm run build
+npm run preview    # Test build locally
+vercel deploy
+```
+
+**Environment Setup:**
+1. Create Supabase project (hosted or self-managed)
+2. Run migrations: `supabase db push`
+3. Set environment variables in Vercel/Netlify dashboard
+4. Deploy frontend
+
+### Self-Hosted
+
+```bash
+# With Docker
+docker build -t keen-mind-bot .
+docker run -e SUPABASE_URL=... keen-mind-bot
+
+# With standalone server
+npm run build
+NODE_ENV=production node dist/server.js
+```
+
+---
+
+## 📊 Monitoring & Observability
+
+Every research run produces:
+- **Run Record** — Question, mode, timing, token usage
+- **Task Log** — Each step (search, read, compute)
+- **Tool Calls** — Every invocation with args/results
+- **Audit Trail** — Permission checks, injection detections
+- **Self-Evaluation** — Gaps, contradictions, certainty levels
+
+View via database or admin dashboard.
+
+---
+
+## 🤝 Contributing
+
+### Adding a New LLM Provider
+
+1. Create `src/core/providers/llm/yourprovider.server.ts`
+2. Implement `LlmAdapter` interface
+3. Register in `router.server.ts`
+4. Add env var: `YOUR_PROVIDER_API_KEY`
+5. Test with `npm test`
+
+### Adding a New Search Provider
+
+1. Create `src/core/providers/search/yourprovider.server.ts`
+2. Implement `SearchAdapter` interface
+3. Register in `registry.server.ts`
+4. Tune authority scoring if needed
+
+### Adding a Tool
+
+1. Create tool under `src/core/tools/`
+2. Implement `Tool` interface
+3. Register in `implementations.server.ts`
+4. Declare permissions
+
+**Guidelines:**
+- No hardcoded provider credentials
+- All external dependencies configurable
+- Assume external services can fail (add fallbacks)
+- Log audit events for user actions
+- Test provider switching
+
+---
+
+## 📚 Resources
+
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** — Deep dive into system design
+- **[.env.example](.env.example)** — Configuration template
+- **Database Schema** — See `supabase/migrations/`
+- **Supabase Docs** — https://supabase.com/docs
+- **TanStack Start** — https://tanstack.com/start
+
+---
+
+## ⚠️ Known Limitations
+
+- **Browser Automation** — Scaffold ready, not yet fully implemented
+- **n8n Integration** — Webhook scaffold ready
+- **Scheduled Tasks** — Background job queue designed but not implemented
+- **Multi-model Comparison** — Optional feature (can be enabled)
+
+---
+
+## 📝 License
+
+MIT License — See [LICENSE](./MIT%20License) file.
+
+**You are free to:**
+- Use commercially
+- Modify and fork
+- Redistribute
+- Use privately
+
+**Under the condition:**
+- Include license text in distributions
+
+---
+
+## 🙏 Acknowledgments
+
+Built with:
+- [TanStack Start](https://tanstack.com/start) — Full-stack React framework
+- [Supabase](https://supabase.com/) — Open-source Firebase alternative
+- [Radix UI](https://www.radix-ui.com/) — Accessible component primitives
+- [Tailwind CSS](https://tailwindcss.com/) — Utility-first styling
+- [Zod](https://zod.dev/) — TypeScript-first validation
+
+---
+
+## 🚀 Next Steps
+
+1. **Clone & Configure** — Set up `.env` with your API keys
+2. **Explore** — Try Quick Search, Deep Research, Knowledge modes
+3. **Inspect Source** — Click `[n]` markers to verify evidence
+4. **Customize** — Add your own search providers or tools
+5. **Deploy** — Ship to production
+
+**Questions?** Open an issue on GitHub or check [ARCHITECTURE.md](ARCHITECTURE.md).
+
+---
+
+**Happy researching!** 🔍📚
