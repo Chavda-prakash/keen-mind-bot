@@ -1,9 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { ownerContext } from "@/lib/owner-context";
 
 export const listFiles = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([ownerContext])
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("files")
@@ -19,7 +19,7 @@ export const listFiles = createServerFn({ method: "GET" })
  * every chunk, and writes the vectors used by knowledge_search.
  */
 export const ingestTextDocument = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([ownerContext])
   .inputValidator((input: unknown) =>
     z
       .object({
@@ -89,7 +89,7 @@ export const ingestTextDocument = createServerFn({ method: "POST" })
   });
 
 export const deleteFile = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([ownerContext])
   .inputValidator((input: unknown) => z.object({ fileId: z.string().uuid() }).parse(input))
   .handler(async ({ context, data }) => {
     const { error } = await context.supabase.from("files").delete().eq("id", data.fileId);

@@ -33,7 +33,7 @@ function ResearchLayout() {
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Compass className="h-4 w-4" />
           </span>
-          <span className="font-semibold tracking-tight">Sutradhar</span>
+          <span className="font-semibold tracking-tight">CIEL</span>
         </div>
         <div className="px-3">
           <Link

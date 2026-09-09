@@ -22,7 +22,7 @@ export function createWikipediaProvider(): SearchProvider {
         origin: "*",
       });
       const res = await fetch(`https://en.wikipedia.org/w/api.php?${params.toString()}`, {
-        headers: { "User-Agent": "SutradharResearchAgent/1.0" },
+        headers: { "User-Agent": "CIELResearchAgent/1.0" },
         signal: q.signal ?? AbortSignal.timeout(10_000),
       });
       if (!res.ok) throw new Error(`wikipedia search failed: ${res.status}`);

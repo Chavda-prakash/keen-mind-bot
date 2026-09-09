@@ -35,7 +35,7 @@ export function createDuckDuckGoProvider(): SearchProvider {
       const res = await fetch(`${ENDPOINT}?${params.toString()}`, {
         headers: {
           "User-Agent":
-            "Mozilla/5.0 (compatible; SutradharResearchAgent/1.0; +https://lovable.dev)",
+            "Mozilla/5.0 (compatible; CIELResearchAgent/1.0; +https://lovable.dev)",
           Accept: "text/html",
           "Accept-Language": "en-US,en;q=0.9",
         },

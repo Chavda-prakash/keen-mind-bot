@@ -79,12 +79,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Sutradhar — Cited AI Research Agent" },
+      { title: "CIEL — Cited AI Research Agent" },
       {
         name: "description",
         content: "Evidence-first AI research with real sources and verified inline citations.",
       },
-      { property: "og:title", content: "Sutradhar — Cited AI Research Agent" },
+      { property: "og:title", content: "CIEL — Cited AI Research Agent" },
       { property: "og:description", content: "Evidence-first AI research with verified citations." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

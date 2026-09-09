@@ -1,12 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { ownerContext } from "@/lib/owner-context";
 
 const ModeSchema = z.enum(["quick", "deep", "files", "local"]);
 
 /** Returns (creating if needed) the caller's default workspace. */
 export const getWorkspace = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([ownerContext])
   .handler(async ({ context }) => {
     const { data: existing } = await context.supabase
       .from("workspaces")
@@ -25,7 +25,7 @@ export const getWorkspace = createServerFn({ method: "GET" })
   });
 
 export const listConversations = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([ownerContext])
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("conversations")
@@ -38,7 +38,7 @@ export const listConversations = createServerFn({ method: "GET" })
   });
 
 export const getConversation = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([ownerContext])
   .inputValidator((input: unknown) => z.object({ conversationId: z.string().uuid() }).parse(input))
   .handler(async ({ context, data }) => {
     const { data: conversation, error } = await context.supabase
@@ -57,7 +57,7 @@ export const getConversation = createServerFn({ method: "GET" })
   });
 
 export const deleteConversation = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([ownerContext])
   .inputValidator((input: unknown) => z.object({ conversationId: z.string().uuid() }).parse(input))
   .handler(async ({ context, data }) => {
     const { error } = await context.supabase.from("conversations").delete().eq("id", data.conversationId);
@@ -70,7 +70,7 @@ export const deleteConversation = createServerFn({ method: "POST" })
  * stores the cited answer on the conversation.
  */
 export const askQuestion = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([ownerContext])
   .inputValidator((input: unknown) =>
     z
       .object({
@@ -190,7 +190,7 @@ export const askQuestion = createServerFn({ method: "POST" })
   });
 
 export const listMemories = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([ownerContext])
   .handler(async ({ context }) => {
     const { data } = await context.supabase
       .from("memories")
@@ -202,7 +202,7 @@ export const listMemories = createServerFn({ method: "GET" })
   });
 
 export const addMemory = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([ownerContext])
   .inputValidator((input: unknown) =>
     z
       .object({
@@ -226,7 +226,7 @@ export const addMemory = createServerFn({ method: "POST" })
   });
 
 export const deleteMemory = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([ownerContext])
   .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ context, data }) => {
     const { error } = await context.supabase.from("memories").delete().eq("id", data.id);

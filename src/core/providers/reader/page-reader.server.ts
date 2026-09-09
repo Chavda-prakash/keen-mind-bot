@@ -38,7 +38,7 @@ export async function readPage(
   const res = await fetch(check.url.toString(), {
     redirect: "follow",
     headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; SutradharResearchAgent/1.0)",
+      "User-Agent": "Mozilla/5.0 (compatible; CIELResearchAgent/1.0)",
       Accept: "text/html,application/xhtml+xml,text/plain",
     },
     signal: opts.signal ?? AbortSignal.timeout(cfg.limits.fetchTimeoutMs),
