@@ -43,8 +43,8 @@ function Landing() {
           >
             Start researching
           </Link>
-          <Link to="/auth" className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium">
-            Sign in
+          <Link to="/knowledge" className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium">
+            Knowledge files
           </Link>
         </div>
 
