@@ -12,7 +12,6 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
-import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
@@ -79,12 +78,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Sutradhar — Cited AI Research Agent" },
+      { title: "CIEL — Cited AI Research Agent" },
       {
         name: "description",
         content: "Evidence-first AI research with real sources and verified inline citations.",
       },
-      { property: "og:title", content: "Sutradhar — Cited AI Research Agent" },
+      { property: "og:title", content: "CIEL — Cited AI Research Agent" },
       { property: "og:description", content: "Evidence-first AI research with verified citations." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -120,42 +119,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const router = useRouter();
 
-  useEffect(() => {
-    let active = true;
-
-    const continueAuthenticatedSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!active || !data.session) return;
-
-      if (window.location.pathname === "/" || window.location.pathname === "/auth") {
-        await router.navigate({ to: "/research", replace: true });
-      }
-    };
-
-    void continueAuthenticatedSession();
-
-    const { data: subscription } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-
-      void router.invalidate();
-      if (event !== "SIGNED_OUT") void queryClient.invalidateQueries();
-
-      if (
-        event === "SIGNED_IN" &&
-        session &&
-        (window.location.pathname === "/" || window.location.pathname === "/auth")
-      ) {
-        void router.navigate({ to: "/research", replace: true });
-      }
-    });
-
-    return () => {
-      active = false;
-      subscription.subscription.unsubscribe();
-    };
-  }, [queryClient, router]);
 
   return (
     <QueryClientProvider client={queryClient}>

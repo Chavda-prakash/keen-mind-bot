@@ -309,7 +309,7 @@ function EmptyState({ onPick }: { onPick: (q: string) => void }) {
       <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
         <Sparkles className="h-3.5 w-3.5" /> Evidence-first research
       </div>
-      <h1 className="text-3xl font-semibold tracking-tight">What should Sutradhar research?</h1>
+      <h1 className="text-3xl font-semibold tracking-tight">What should CIEL research?</h1>
       <p className="mx-auto max-w-md text-sm text-muted-foreground">
         Every factual claim is grounded in sources that were actually retrieved and read — never invented.
       </p>

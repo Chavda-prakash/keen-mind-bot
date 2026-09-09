@@ -4,13 +4,13 @@ import { Compass, FileSearch, Quote, Search } from "lucide-react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Sutradhar — Cited AI Research Agent" },
+      { title: "CIEL — Cited AI Research Agent" },
       {
         name: "description",
         content:
-          "Sutradhar is a personal AI research agent: real web search, sources you can open, inline citations, deep research and document Q&A.",
+          "CIEL is a personal AI research agent: real web search, sources you can open, inline citations, deep research and document Q&A.",
       },
-      { property: "og:title", content: "Sutradhar — Cited AI Research Agent" },
+      { property: "og:title", content: "CIEL — Cited AI Research Agent" },
       {
         property: "og:description",
         content: "Evidence-first AI research with real sources, inline citations and deep research workflows.",
@@ -33,7 +33,7 @@ function Landing() {
           Research that shows its sources
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground">
-          Sutradhar plans a research strategy, searches the live web, reads the pages it finds, verifies each
+          CIEL plans a research strategy, searches the live web, reads the pages it finds, verifies each
           claim against retrieved evidence, and answers with inline citations you can open.
         </p>
         <div className="mt-8 flex justify-center gap-3">
@@ -43,8 +43,8 @@ function Landing() {
           >
             Start researching
           </Link>
-          <Link to="/auth" className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium">
-            Sign in
+          <Link to="/knowledge" className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium">
+            Knowledge files
           </Link>
         </div>
 
