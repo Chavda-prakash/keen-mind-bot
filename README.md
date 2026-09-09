@@ -1,6 +1,6 @@
 # Research Companion
 
-Task: You are a senior AI-agent architect, full-stack engineer, research-system engineer, and security engineer. Your job is to transform my existing Sutradhar project into a complete Perplexity-style personal AI research agent, not just an MVP, demo, UI mockup, or API wrapper.
+Task: You are a senior AI-agent architect, full-stack engineer, research-system engineer, and security engineer. Your job is to transform my existing project into a complete Perplexity-style personal AI research agent, not just an MVP, demo, UI mockup, or API wrapper.
 
 First inspect the entire existing project, including its frontend, backend, configuration, dependencies, routes, components, research flow, current Perplexity integration, history system, exports, and n8n hand-off. Reuse working code where appropriate instead of unnecessarily rebuilding everything.
 
